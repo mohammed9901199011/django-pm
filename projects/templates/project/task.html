@@ -1,29 +1,54 @@
-    {% load i18n %}
 
-    <ul>
-      {% for task in project.task_set.all %}
-          <li>
-            <form method="post" action="{% url 'task_update' task.id %}">
-                {% csrf_token %}
-                <input
-                        type="checkbox"
-                        name = "is_completed"
-                        {% if task.is_completed %} checked {% endif %}
-                        onchange="this.form.submit()"
-                />
+{% load i18n %}
+{% block content %}
+
+<!-- قائمة المهام -->
+<ul class="list-group">
+    {% for task in project.task_set.all %}
+          <li class="list-group-item d-flex align-items-center justify-content-between">
+            <form method="post" action="{% url 'task_update' task.id %}" class="d-flex align-items-center">
+              {% csrf_token %}
+              <input
+                class="form-check-input me-2"
+                type="checkbox"
+                name="is_completed"
+                {% if task.is_completed %} checked {% endif %}
+                onchange="this.form.submit()"
+              />
+              <span class="{% if task.is_completed %}text-decoration-line-through{% endif %}">
                 {{ task.description }}
+              </span>
             </form>
+
+            <!-- زر الحذف -->
             <form method="post" action="{% url 'task_delete' task.id %}">
-                {% csrf_token %}
-                <button type="submit">Delete</button>
+              {% csrf_token %}
+              <button type="submit" class="btn btn-sm btn-outline-danger">
+                <i class="bi bi-trash"></i>
+              </button>
             </form>
           </li>
-      {% endfor %}
-    </ul>
+    {% empty %}
+        <li class="list-group-item text-center">
+          {% trans "No tasks available" %}
+        </li>
+    {% endfor %}
+</ul>
 
-    <form method="post" action="{% url 'task_create' %}">
+<!-- إضافة مهمة جديدة -->
+<div class="card mt-3">
+  <div class="card-body">
+    <form method="post" action="{% url 'task_create' %}" class="d-flex">
       {% csrf_token %}
-      <input type="hidden" value="{{ project.id }} " name = "project">
-      <input type="text"  name = "description" placeholder="{% trans 'New Task' %}" />
-      <input type="submit" value="{% trans 'Add' %} " />
+      <div class="input-group">
+        <input type="hidden" value="{{ project.id }}" name="project">
+        <input type="text" name="description" class="form-control" placeholder="{% trans 'New Task' %}" required>
+        <button type="submit" class="btn btn-outline-dark">
+          {% trans 'Add' %}
+        </button>
+      </div>
     </form>
+  </div>
+</div>
+
+{% endblock %}
