@@ -11,7 +11,7 @@ from . import forms
 class ProjectListView(ListView):
     model = models.Project
     template_name = 'project/list.html'
-    paginate_by = 6
+    paginate_by = 3
 
     # البحث
     def get_queryset(self):
